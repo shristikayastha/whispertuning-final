@@ -1,0 +1,27 @@
+# Nepali ASR - Dependencies
+# PyTorch and core ML
+torch>=2.0.0
+torchaudio>=2.0.0
+
+# HuggingFace ecosystem
+transformers>=4.36.0
+datasets>=2.14.0
+peft>=0.7.0
+accelerate>=0.25.0
+
+# Evaluation
+evaluate>=0.4.0
+jiwer>=3.0.0
+
+# Audio processing
+librosa>=0.10.0
+soundfile>=0.12.0
+
+# Demo interface
+gradio>=4.0.0
+
+# Utilities
+pyyaml>=6.0
+tqdm>=4.65.0
+tensorboard>=2.15.0
+numpy>=1.24.0
