@@ -1,11 +1,12 @@
 """
-Data Loader for Nepali Common Voice Dataset
-============================================
+Data Loader for Nepali ASR Dataset
+===================================
 
-This module handles loading and preprocessing the Mozilla Common Voice
-dataset for Nepali language ASR training.
+This module handles loading and preprocessing Nepali ASR datasets
+for Whisper fine-tuning. Supports both Common Voice and OpenSLR formats.
 """
 
+import os
 import logging
 from datasets import load_dataset, DatasetDict, Audio
 from transformers import WhisperProcessor
@@ -15,15 +16,16 @@ logger = logging.getLogger(__name__)
 
 
 def load_common_voice_dataset(
-    dataset_name: str = "mozilla-foundation/common_voice_16_1",
+    dataset_name: str = "spktsagar/openslr-nepali-asr-cleaned",
     language: str = "ne-NP",
     sampling_rate: int = 16000
 ) -> DatasetDict:
     """
-    Load the Mozilla Common Voice dataset for Nepali.
+    Load a Nepali ASR dataset from HuggingFace.
 
-    This downloads the dataset from HuggingFace (requires login).
-    Audio is automatically resampled to the required sampling rate.
+    Supports:
+      - spktsagar/openslr-nepali-asr-cleaned (OpenSLR format)
+      - mozilla-foundation/common_voice_* (Common Voice format)
 
     Args:
         dataset_name: HuggingFace dataset identifier
@@ -36,36 +38,64 @@ def load_common_voice_dataset(
     logger.info(f"Loading dataset: {dataset_name} ({language})")
 
     # Get HF token for gated datasets
-    import os
     hf_token = os.environ.get("HF_TOKEN", None)
 
-    # Load train, validation, and test splits
-    # trust_remote_code is needed for some dataset scripts
-    dataset = DatasetDict()
+    # Detect dataset type
+    is_openslr = "openslr" in dataset_name.lower() or "spktsagar" in dataset_name.lower()
 
-    dataset["train"] = load_dataset(
-        dataset_name,
-        language,
-        split="train",
-        trust_remote_code=True,
-        token=hf_token
-    )
+    if is_openslr:
+        # OpenSLR format: single unsplit dataset with 'utterance' and 'transcription' fields
+        logger.info("Detected OpenSLR format dataset")
+        full_dataset = load_dataset(
+            dataset_name,
+            split="train",
+            trust_remote_code=True,
+            token=hf_token
+        )
 
-    dataset["validation"] = load_dataset(
-        dataset_name,
-        language,
-        split="validation",
-        trust_remote_code=True,
-        token=hf_token
-    )
+        # Rename columns to match Common Voice format
+        # utterance -> audio, transcription -> sentence
+        full_dataset = full_dataset.rename_column("utterance", "audio")
+        full_dataset = full_dataset.rename_column("transcription", "sentence")
 
-    dataset["test"] = load_dataset(
-        dataset_name,
-        language,
-        split="test",
-        trust_remote_code=True,
-        token=hf_token
-    )
+        # Split: 90% train, 5% validation, 5% test
+        logger.info("Splitting dataset: 90% train, 5% val, 5% test")
+        split1 = full_dataset.train_test_split(test_size=0.1, seed=42)
+        split2 = split1["test"].train_test_split(test_size=0.5, seed=42)
+
+        dataset = DatasetDict({
+            "train": split1["train"],
+            "validation": split2["train"],
+            "test": split2["test"],
+        })
+    else:
+        # Common Voice format: pre-split with 'audio' and 'sentence' fields
+        logger.info("Detected Common Voice format dataset")
+        dataset = DatasetDict()
+
+        dataset["train"] = load_dataset(
+            dataset_name,
+            language,
+            split="train",
+            trust_remote_code=True,
+            token=hf_token
+        )
+
+        dataset["validation"] = load_dataset(
+            dataset_name,
+            language,
+            split="validation",
+            trust_remote_code=True,
+            token=hf_token
+        )
+
+        dataset["test"] = load_dataset(
+            dataset_name,
+            language,
+            split="test",
+            trust_remote_code=True,
+            token=hf_token
+        )
 
     logger.info(f"Dataset loaded:")
     logger.info(f"  Train: {len(dataset['train'])} samples")
