@@ -39,7 +39,7 @@ env/
 .ipynb_checkpoints/
 
 # Data
-data/
+
 *.mp3
 *.wav
 *.flac
