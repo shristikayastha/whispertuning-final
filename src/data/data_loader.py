@@ -35,6 +35,10 @@ def load_common_voice_dataset(
     """
     logger.info(f"Loading dataset: {dataset_name} ({language})")
 
+    # Get HF token for gated datasets
+    import os
+    hf_token = os.environ.get("HF_TOKEN", None)
+
     # Load train, validation, and test splits
     # trust_remote_code is needed for some dataset scripts
     dataset = DatasetDict()
@@ -43,21 +47,24 @@ def load_common_voice_dataset(
         dataset_name,
         language,
         split="train",
-        trust_remote_code=True
+        trust_remote_code=True,
+        token=hf_token
     )
 
     dataset["validation"] = load_dataset(
         dataset_name,
         language,
         split="validation",
-        trust_remote_code=True
+        trust_remote_code=True,
+        token=hf_token
     )
 
     dataset["test"] = load_dataset(
         dataset_name,
         language,
         split="test",
-        trust_remote_code=True
+        trust_remote_code=True,
+        token=hf_token
     )
 
     logger.info(f"Dataset loaded:")
