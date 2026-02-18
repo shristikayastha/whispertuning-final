@@ -1,6 +1,6 @@
 """
 Gradio Demo for Nepali ASR
-==========================
+
 
 Professional web interface for demonstrating Nepali speech recognition.
 Supports both microphone recording and file upload.

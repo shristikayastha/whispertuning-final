@@ -1,8 +1,7 @@
 """
 Main Training Script for Nepali ASR
-====================================
 
-This script orchestrates the complete training pipeline for
+This script explains the complete training pipeline for
 fine-tuning Whisper on the Nepali Common Voice dataset.
 
 Usage:

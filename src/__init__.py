@@ -7,4 +7,4 @@ using Mozilla Common Voice dataset.
 """
 
 __version__ = "1.0.0"
-__author__ = "Ashish"
+__author__ = "Shristi Kayastha"
