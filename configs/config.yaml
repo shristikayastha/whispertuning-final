@@ -21,7 +21,7 @@ lora:
 
 # Data Configuration
 data:
-  dataset_name: "mozilla-foundation/common_voice_16_1"
+  dataset_name: "mozilla-foundation/common_voice_17_0"
   language: "ne-NP"
   train_split: "train"
   validation_split: "validation"
