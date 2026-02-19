@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 def load_whisper_model(
     model_name: str = "openai/whisper-small",
     device: Optional[str] = None,
-    torch_dtype: torch.dtype = torch.float16,
+    torch_dtype: torch.dtype = torch.float32,
     load_in_8bit: bool = False
 ) -> WhisperForConditionalGeneration:
     """
