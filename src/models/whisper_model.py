@@ -8,7 +8,7 @@ LoRA (Low-Rank Adaptation) for memory-efficient fine-tuning.
 
 import torch
 from transformers import WhisperForConditionalGeneration
-from peft import LoraConfig, get_peft_model, TaskType, PeftModel
+from peft import LoraConfig, get_peft_model, PeftModel
 from typing import Optional, List, Dict, Any
 import logging
 
@@ -97,8 +97,11 @@ def setup_lora(
         target_modules=target_modules,
         lora_dropout=lora_dropout,
         bias=bias,
-        task_type=TaskType.CAUSAL_LM,
-        inference_mode=False
+        # NOTE: Do NOT set task_type here! SEQ_2_SEQ_LM and CAUSAL_LM
+        # create PEFT wrappers that inject input_ids=None into forward(),
+        # but Whisper expects input_features, not input_ids.
+        # Without task_type, PEFT uses the base PeftModel which passes
+        # kwargs through cleanly.
     )
     
     # Apply LoRA to model
