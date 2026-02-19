@@ -183,19 +183,21 @@ def main():
     logger.info("\nTraining complete!")
     logger.info(f"Final training metrics: {train_metrics}")
     
-    # ===== Evaluate =====
-    logger.info("\nRunning final evaluation...")
-    eval_metrics = evaluate_model(trainer)
-    
+    # ===== Summary =====
+    # NOTE: We skip the redundant final evaluate_model() call here because
+    # PEFT's generate() runs outside autocast and hits FP16/FP32 dtype mismatch.
+    # The trainer already evaluates during training at each eval_steps checkpoint,
+    # so WER/CER metrics are already recorded in the training logs.
     logger.info("\n" + "=" * 60)
     logger.info("Training Summary")
     logger.info("=" * 60)
     logger.info(f"Model saved to: {config['training']['output_dir']}")
-    logger.info(f"Final WER: {eval_metrics.get('eval_wer', 'N/A'):.2f}%")
-    logger.info(f"Final CER: {eval_metrics.get('eval_cer', 'N/A'):.2f}%")
+    logger.info(f"Final training loss: {train_metrics.get('train_loss', 'N/A')}")
+    logger.info("Check trainer_state.json for eval WER/CER at each checkpoint.")
+    logger.info("Run: python plot_results.py to generate all figures.")
     logger.info("=" * 60)
     
-    return eval_metrics
+    return train_metrics
 
 
 if __name__ == "__main__":
