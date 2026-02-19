@@ -93,7 +93,7 @@ def create_training_arguments(
         predict_with_generate=predict_with_generate,
         generation_max_length=generation_max_length,
         report_to=report_to,
-        remove_unused_columns=True,
+        remove_unused_columns=False,
         label_names=["labels"],
         **kwargs
     )

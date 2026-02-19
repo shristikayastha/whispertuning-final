@@ -97,7 +97,8 @@ def setup_lora(
         target_modules=target_modules,
         lora_dropout=lora_dropout,
         bias=bias,
-        task_type=TaskType.SEQ_2_SEQ_LM
+        task_type=TaskType.CAUSAL_LM,
+        inference_mode=False
     )
     
     # Apply LoRA to model
