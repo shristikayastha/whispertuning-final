@@ -37,7 +37,7 @@ training:
   gradient_accumulation_steps: 2
   learning_rate: 1.0e-4
   warmup_steps: 500
-  max_steps: 1000
+  max_steps: 1500
   fp16: true
   evaluation_strategy: "steps"
   eval_steps: 500
