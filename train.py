@@ -136,6 +136,15 @@ def main():
     # Prepare for training
     model = prepare_model_for_training(model)
     
+    # Force Nepali language and transcribe task during generation
+    # This prevents Whisper from trying language detection (which causes FP16/FP32 mismatch)
+    model.config.forced_decoder_ids = processor.get_decoder_prompt_ids(
+        language=config["model"]["language"],
+        task=config["model"]["task"]
+    )
+    model.generation_config.forced_decoder_ids = model.config.forced_decoder_ids
+    logger.info(f"Forced decoder IDs set for language={config['model']['language']}, task={config['model']['task']}")
+    
     # ===== Step 5: Setup Trainer =====
     logger.info("\n[Step 5/6] Setting up trainer...")
     
@@ -144,8 +153,10 @@ def main():
         processor=processor,
     )
     
-    # Create training arguments
-    training_args = create_training_arguments(**config["training"])
+    # Create training arguments (add fp16_full_eval to avoid dtype mismatch during eval)
+    training_config = config["training"].copy()
+    training_config["fp16_full_eval"] = True
+    training_args = create_training_arguments(**training_config)
     
     # Create compute metrics function
     compute_metrics = create_compute_metrics_fn(processor)
