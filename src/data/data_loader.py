@@ -18,7 +18,9 @@ logger = logging.getLogger(__name__)
 def load_common_voice_dataset(
     dataset_name: str = "spktsagar/openslr-nepali-asr-cleaned",
     language: str = "ne-NP",
-    sampling_rate: int = 16000
+    sampling_rate: int = 16000,
+    max_train_samples: int = 10000,
+    max_eval_samples: int = 1000
 ) -> DatasetDict:
     """
     Load a Nepali ASR dataset from HuggingFace.
@@ -31,6 +33,8 @@ def load_common_voice_dataset(
         dataset_name: HuggingFace dataset identifier
         language: Language code (ne-NP for Nepali)
         sampling_rate: Target audio sampling rate (16000 for Whisper)
+        max_train_samples: Maximum training samples (default 10000, saves disk)
+        max_eval_samples: Maximum eval/test samples (default 1000)
 
     Returns:
         DatasetDict with train, validation, and test splits
@@ -96,6 +100,18 @@ def load_common_voice_dataset(
             trust_remote_code=True,
             token=hf_token
         )
+
+    # Subset to save disk space and training time
+    # 10K train + 1K val/test is plenty for Whisper fine-tuning
+    if max_train_samples and len(dataset["train"]) > max_train_samples:
+        logger.info(f"Subsetting train: {len(dataset['train'])} -> {max_train_samples}")
+        dataset["train"] = dataset["train"].select(range(max_train_samples))
+    if max_eval_samples and len(dataset["validation"]) > max_eval_samples:
+        logger.info(f"Subsetting validation: {len(dataset['validation'])} -> {max_eval_samples}")
+        dataset["validation"] = dataset["validation"].select(range(max_eval_samples))
+    if max_eval_samples and len(dataset["test"]) > max_eval_samples:
+        logger.info(f"Subsetting test: {len(dataset['test'])} -> {max_eval_samples}")
+        dataset["test"] = dataset["test"].select(range(max_eval_samples))
 
     logger.info(f"Dataset loaded:")
     logger.info(f"  Train: {len(dataset['train'])} samples")
