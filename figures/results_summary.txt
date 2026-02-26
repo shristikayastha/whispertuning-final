@@ -1,19 +1,38 @@
 =================================================================
-  WHISPER FINE-TUNING — RESULTS SUMMARY
+  WHISPER FINE-TUNING — RESULTS SUMMARY (FULL 5000 STEPS)
 =================================================================
 
-  Training Steps Completed:  1000
-  Final Training Loss:       0.6960
-  Min Training Loss:         0.6960
+  Training Steps Completed:  5000
+  Total Epochs:              8.0
+  Final Training Loss:       0.3142
+  Training Time:             5h 31m
 
-  Best Eval Loss:            0.3729 (Step 1000)
-  Best WER:                  66.44% (Step 1000)
-  Final WER:                 66.44%
-  WER Improvement:           11.63% (from 78.08% to 66.44%)
-  Best CER:                  24.64% (Step 1000)
-  Final CER:                 24.64%
+  ---- Evaluation Metrics (Best/Final) ----
+  Best Eval Loss:            0.2784 (Epoch 4.8)
+  Best WER:                  51.51% (Epoch 8.0)
+  Final WER:                 51.51%
+  WER Improvement:           8.5pp (from 59.99% to 51.51%)
+  Best CER:                  16.68% (Epoch 8.0)
+  Final CER:                 16.68%
+  CER Improvement:           3.3pp (from 19.93% to 16.68%)
 
-  Best Checkpoint:           ./outputs/checkpoints/checkpoint-1000
-  Best Metric Value:         66.44250168123739
+  ---- Model Configuration ----
+  Base Model:                openai/whisper-small
+  Total Parameters:          248,812,800
+  Trainable Parameters:      7,077,888 (2.84%)
+  LoRA Rank:                 32
+  LoRA Alpha:                64
+  Dataset Size:              10,000 (train) / 1,000 (val)
+  GPU:                       NVIDIA RTX 3080 Ti (12GB)
+
+  ---- Checkpoint History ----
+  Step  1500 (Ep 2.4): WER=59.99%, CER=19.93%, Loss=0.3287
+  Step  2000 (Ep 3.2): WER=56.83%, CER=18.28%, Loss=0.2980
+  Step  2500 (Ep 4.0): WER=55.31%, CER=18.63%, Loss=0.2844
+  Step  3000 (Ep 4.8): WER=53.60%, CER=17.02%, Loss=0.2784
+  Step  3500 (Ep 5.6): WER=53.40%, CER=18.18%, Loss=0.2792
+  Step  4000 (Ep 6.4): WER=52.66%, CER=17.04%, Loss=0.2788
+  Step  4500 (Ep 7.2): WER=52.79%, CER=17.01%, Loss=0.2799
+  Step  5000 (Ep 8.0): WER=51.51%, CER=16.68%, Loss=0.2803
 
 =================================================================
